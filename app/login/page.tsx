@@ -34,13 +34,10 @@ function LoginForm() {
     });
 
     if (signInError) {
-      setError(
-        signInError.message.includes("Invalid login credentials")
-          ? "البريد الإلكتروني أو كلمة المرور غير صحيحة."
-          : "تعذّر تسجيل الدخول. حاول مرة أخرى."
-      );
-      setLoading(false);
-      return;
+      console.log("LOGIN ERROR:", signInError);
+  setError(signInError.message);
+  setLoading(false);
+  return;
     }
 
     router.push(searchParams.get("next") || "/dashboard");

@@ -23,11 +23,11 @@ export default async function NewListingPage() {
           <legend className="mb-1.5 block text-sm font-bold text-ink-600">نوع الطلب</legend>
           <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-ink-100 p-3 has-[:checked]:border-spark has-[:checked]:bg-spark-50">
             <input type="radio" name="looking_for" value="members" defaultChecked required className="accent-spark" />
-            <span className="text-sm font-medium text-ink">أبحث عن أعضاء</span>
+            <span className="text-sm font-medium text-ink">أبحث عن فريق أنضم إليه</span>
           </label>
           <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-ink-100 p-3 has-[:checked]:border-spark has-[:checked]:bg-spark-50">
             <input type="radio" name="looking_for" value="team" className="accent-spark" />
-            <span className="text-sm font-medium text-ink">أبحث عن فريق</span>
+            <span className="text-sm font-medium text-ink">أبحث عن أعضاء لمشروعي</span>
           </label>
         </fieldset>
 
