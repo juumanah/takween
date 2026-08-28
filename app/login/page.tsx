@@ -4,7 +4,7 @@ import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-
+import { Turnstile } from "@marsidev/react-turnstile";
 export default function LoginPage() {
   return (
     <Suspense fallback={null}>
@@ -22,17 +22,24 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+   async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+  setError(null);
+  if (!captchaToken) {
+    setError("يرجى إكمال التحقق من أنك لست روبوتًا.");
+    setLoading(false);
+    return;
+  }
+  setLoading(true);
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+     email,
+  password,
+  options: {
+    captchaToken,
+  },
+   });
     if (signInError) {
       console.log("LOGIN ERROR:", signInError);
   setError(signInError.message);
@@ -73,7 +80,11 @@ function LoginForm() {
             placeholder="••••••••"
           />
         </label>
-
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+          onSuccess={(token) => setCaptchaToken(token)}
+          onExpire={() => setCaptchaToken(null)}
+        />
         {error && (
           <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
             {error}
