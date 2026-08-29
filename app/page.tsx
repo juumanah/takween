@@ -31,13 +31,13 @@ export default async function LandingPage() {
 
             <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
-                href="/explore?looking_for=team"
+                href="/explore?looking_for=members"
                 className="w-full rounded-full bg-spark px-6 py-3 text-center font-bold text-paper shadow-card hover:bg-spark-600 transition-colors sm:w-auto"
               >
                 أبحث عن فريق
               </Link>
               <Link
-                href="/explore?looking_for=members"
+                href="/listings/new"
                 className="w-full rounded-full bg-ink px-6 py-3 text-center font-bold text-paper shadow-card hover:bg-ink-800 transition-colors sm:w-auto"
               >
                 أبحث عن أعضاء
