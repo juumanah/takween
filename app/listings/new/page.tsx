@@ -15,21 +15,14 @@ export default async function NewListingPage() {
     <div className="mx-auto max-w-2xl px-5 py-14">
       <h1 className="font-display text-3xl font-bold text-ink">انشر فرصة جديدة</h1>
       <p className="mt-2 text-sm text-ink-400">
-        اختر ما إذا كنت تبحث عن أعضاء لمشروعك، أو تبحث عن فريق تنضم إليه.
+      شارك مشروعك وحدد المهارات والأعضاء الذين تبحث عنهم.
       </p>
 
-      <form action={createListing} className="mt-8 space-y-5">
-        <fieldset className="grid grid-cols-2 gap-3">
-          <legend className="mb-1.5 block text-sm font-bold text-ink-600">نوع الطلب</legend>
-          <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-ink-100 p-3 has-[:checked]:border-spark has-[:checked]:bg-spark-50">
-            <input type="radio" name="looking_for" value="members" defaultChecked required className="accent-spark" />
-            <span className="text-sm font-medium text-ink">أبحث عن فريق أنضم إليه</span>
-          </label>
-          <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-ink-100 p-3 has-[:checked]:border-spark has-[:checked]:bg-spark-50">
-            <input type="radio" name="looking_for" value="team" className="accent-spark" />
-            <span className="text-sm font-medium text-ink">أبحث عن أعضاء لمشروعي</span>
-          </label>
-        </fieldset>
+      ```tsx
+<form action={createListing} className="mt-8 space-y-5">
+  
+```
+
 
         <Field label="عنوان المشروع / الهاكاثون">
           <input name="title" required maxLength={120} className="input" placeholder="مثال: تطبيق لتنظيم المذاكرة الجماعية" />

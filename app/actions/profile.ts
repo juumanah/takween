@@ -17,7 +17,8 @@ export async function updateProfile(formData: FormData) {
   const bio = String(formData.get("bio") || "").trim();
   const contact_method = String(formData.get("contact_method") || "").trim();
   const avatar_url = String(formData.get("avatar_url") || "").trim();
-
+  const looking_for_team = formData.get("looking_for_team") === "on";
+  const selectedSkillIds = formData.getAll("skills").map(String);
   if (!full_name) {
     throw new Error("الاسم الكامل مطلوب.");
   }
@@ -31,14 +32,40 @@ export async function updateProfile(formData: FormData) {
       bio,
       contact_method,
       avatar_url: avatar_url || null,
+      looking_for_team,
     })
     .eq("id", user.id);
 
-  if (error) {
-    throw new Error("تعذّر حفظ التغييرات. حاول مرة أخرى.");
-  }
+    
+    if (error) {
+  throw new Error("تعذّر حفظ التغييرات. حاول مرة أخرى.");
+}
 
-  revalidatePath("/profile/edit");
-  revalidatePath(`/profile/${user.id}`);
-  redirect(`/profile/${user.id}`);
+const { error: deleteSkillsError } = await supabase
+  .from("profile_skills")
+  .delete()
+  .eq("profile_id", user.id);
+
+if (deleteSkillsError) {
+  throw new Error("تعذّر تحديث المهارات. حاول مرة أخرى.");
+}
+
+if (selectedSkillIds.length > 0) {
+  const { error: insertSkillsError } = await supabase
+    .from("profile_skills")
+    .insert(
+      selectedSkillIds.map((skill_id) => ({
+        profile_id: user.id,
+        skill_id,
+      }))
+    );
+
+  if (insertSkillsError) {
+    throw new Error("تعذّر حفظ المهارات. حاول مرة أخرى.");
+  }
+}
+
+revalidatePath("/profile/edit");
+revalidatePath(`/profile/${user.id}`);
+redirect(`/profile/${user.id}`);
 }

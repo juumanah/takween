@@ -11,7 +11,15 @@ export default async function EditProfilePage() {
   if (!user) redirect("/login?next=/profile/edit");
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  const { data: skills } = await supabase
+  .from("skills")
+  .select("id, name")
+  .order("name");
 
+   const { data: profileSkills } = await supabase
+  .from("profile_skills")
+  .select("skill_id")
+  .eq("profile_id", user.id);
   return (
     <div className="mx-auto max-w-xl px-5 py-14">
       <h1 className="font-display text-3xl font-bold text-ink">ملفك الشخصي</h1>
@@ -51,7 +59,42 @@ export default async function EditProfilePage() {
         <Field label="رابط صورة شخصية (اختياري)">
           <input name="avatar_url" type="url" defaultValue={profile?.avatar_url || ""} className="input" placeholder="https://" />
         </Field>
+        <label className="flex items-center gap-3">
+         <input
 
+         name="looking_for_team"
+         type="checkbox"
+         defaultChecked={profile?.looking_for_team || false}
+         className="h-4 w-4"
+         />
+          <span className="text-sm font-bold text-ink-600">
+    أبحث عن فريق
+        </span>
+         </label>
+<Field label="مهاراتي">
+  <div className="grid gap-3 sm:grid-cols-2">
+    {skills?.map((skill) => {
+      const isSelected = profileSkills?.some(
+        (profileSkill) => profileSkill.skill_id === skill.id
+      );
+
+      return (
+        <label key={skill.id} className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            name="skills"
+            value={skill.id}
+            defaultChecked={isSelected}
+            className="h-4 w-4"
+          />
+          <span className="text-sm font-bold text-ink-600">
+            {skill.name}
+          </span>
+        </label>
+      );
+    })}
+  </div>
+</Field>
         <button type="submit" className="btn-primary w-full">
           حفظ التغييرات
         </button>

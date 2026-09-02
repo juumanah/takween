@@ -20,6 +20,7 @@ export interface Profile {
   bio: string | null;
   avatar_url: string | null;
   contact_method: string | null;
+  looking_for_team: boolean;
   created_at: string;
 }
 
@@ -49,6 +50,11 @@ export interface ListingSkill {
   listing_id: string;
   skill_id: string;
   kind: SkillKind;
+}
+export interface ProfileSkill {
+  id: string;
+  profile_id: string;
+  skill_id: string;
 }
 
 export interface JoinRequest {

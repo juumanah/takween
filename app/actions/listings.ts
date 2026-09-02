@@ -49,7 +49,6 @@ export async function createListing(formData: FormData) {
 
   const title = String(formData.get("title") || "").trim();
   const type = String(formData.get("type") || "other");
-  const looking_for = String(formData.get("looking_for") || "members");
   const description = String(formData.get("description") || "").trim();
   const members_needed = Number(formData.get("members_needed") || 1);
   const deadline = String(formData.get("deadline") || "") || null;
@@ -69,7 +68,7 @@ export async function createListing(formData: FormData) {
       owner_id: user.id,
       title,
       type,
-      looking_for,
+      looking_for: "members",
       description,
       members_needed: Number.isFinite(members_needed) && members_needed > 0 ? members_needed : 1,
       deadline,
