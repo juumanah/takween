@@ -80,7 +80,17 @@ function LoginForm() {
             placeholder="••••••••"
           />
         </label>
+                  <div className="text-left">
+          <Link
+            href="/forgot-password"
+            className="text-sm font-bold text-spark hover:text-spark-600"
+          >
+            نسيت كلمة المرور؟
+          </Link>
+        </div>
+
         <Turnstile
+          
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
           onSuccess={(token) => setCaptchaToken(token)}
           onExpire={() => setCaptchaToken(null)}

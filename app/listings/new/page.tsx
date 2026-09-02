@@ -76,13 +76,26 @@ export default async function NewListingPage() {
           <input type="url" name="external_link" className="input" placeholder="https://" />
         </Field>
 
-        <Field label="المهارات المطلوبة" hint="افصل بينها بفاصلة، مثال: React, Figma">
-          <input name="required_skills" className="input" placeholder="React, UI/UX Design" />
+        <Field label="المهارات المطلوبة للمشروع">
+  <p className="mb-2 text-xs text-ink-400">
+    أضف المهارات التي تحتاجها من أعضاء فريقك.
+  </p>
+
+  <input
+    name="required_skills"
+           />
         </Field>
 
-        <Field label="مهاراتك التي تجلبها للمشروع (اختياري)" hint="افصل بينها بفاصلة">
-          <input name="owned_skills" className="input" placeholder="Product Management" />
-        </Field>
+        <Field label="المهارات التي ستقدمها للمشروع">
+  <p className="mb-2 text-xs text-ink-400">
+    أضف المهارات التي ستساهم بها في تنفيذ المشروع.
+  </p>
+
+  <input
+    name="owned_skills"
+    
+  />
+</Field>
 
         <button type="submit" className="btn-primary w-full">
           نشر الفرصة
