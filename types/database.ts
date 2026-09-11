@@ -14,12 +14,11 @@ export type RequestStatus = "pending" | "accepted" | "rejected";
 export interface Profile {
   id: string;
   full_name: string;
-  email: string;
   major: string | null;
   university: string | null;
   bio: string | null;
   avatar_url: string | null;
-  contact_method: string | null;
+
   looking_for_team: boolean;
   created_at: string;
 }

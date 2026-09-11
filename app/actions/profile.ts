@@ -19,6 +19,7 @@ export async function updateProfile(formData: FormData) {
   const avatar_url = String(formData.get("avatar_url") || "").trim();
   const looking_for_team = formData.get("looking_for_team") === "on";
   const selectedSkillIds = formData.getAll("skills").map(String);
+  const next = String(formData.get("next") || "").trim();
   if (!full_name) {
     throw new Error("الاسم الكامل مطلوب.");
   }
@@ -30,7 +31,6 @@ export async function updateProfile(formData: FormData) {
       major,
       university,
       bio,
-      contact_method,
       avatar_url: avatar_url || null,
       looking_for_team,
     })
@@ -40,7 +40,21 @@ export async function updateProfile(formData: FormData) {
     if (error) {
   throw new Error("تعذّر حفظ التغييرات. حاول مرة أخرى.");
 }
+const { error: contactError } = await supabase
+  .from("profile_contacts")
+  .upsert(
+    {
+      user_id: user.id,
+      contact_method,
+    },
+    {
+      onConflict: "user_id",
+    }
+  );
 
+if (contactError) {
+  throw new Error("تعذّر حفظ وسيلة التواصل. حاول مرة أخرى.");
+}
 const { error: deleteSkillsError } = await supabase
   .from("profile_skills")
   .delete()
@@ -67,5 +81,10 @@ if (selectedSkillIds.length > 0) {
 
 revalidatePath("/profile/edit");
 revalidatePath(`/profile/${user.id}`);
+
+if (next.startsWith("/") && !next.startsWith("//")) {
+  redirect(next);
+}
+
 redirect(`/profile/${user.id}`);
 }

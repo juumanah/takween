@@ -18,15 +18,54 @@ create extension if not exists "pgcrypto";
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   full_name text not null default '',
-  email text not null default '',
   major text default '',
   university text default '',
   bio text default '',
   avatar_url text,
-  contact_method text default '', -- shown only after a join request is accepted
   created_at timestamptz not null default now()
 );
+   create table if not exists public.profile_contacts (
+  user_id uuid primary key references public.profiles (id) on delete cascade,
+  contact_method text
+);
 
+alter table public.profile_contacts enable row level security;
+ create policy "Users can read allowed profile contacts"
+on public.profile_contacts
+for select
+to authenticated
+using (
+  user_id = auth.uid()
+  or exists (
+    select 1
+    from public.join_requests jr
+    join public.listings l on l.id = jr.listing_id
+    where jr.status = 'accepted'
+      and jr.applicant_id = profile_contacts.user_id
+      and l.owner_id = auth.uid()
+  )
+  or exists (
+    select 1
+    from public.join_requests jr
+    join public.listings l on l.id = jr.listing_id
+    where jr.status = 'accepted'
+      and jr.applicant_id = auth.uid()
+      and l.owner_id = profile_contacts.user_id
+  )
+);
+
+create policy "Users can insert their own profile contacts"
+on public.profile_contacts
+for insert
+to authenticated
+with check (user_id = auth.uid());
+
+create policy "Users can update their own profile contacts"
+on public.profile_contacts
+for update
+to authenticated
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
 alter table public.profiles enable row level security;
 
 create policy "Profiles are publicly readable"

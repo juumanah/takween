@@ -26,7 +26,7 @@ export default function ListingCard({
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="group flex flex-col rounded-2xl border border-ink-100 bg-paper p-5 shadow-card transition-transform hover:-translate-y-0.5"
+      className="group flex flex-col rounded-2xl border border-ink-100 bg-paper p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-spark/30 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
         <span className="rounded-full bg-ink-50 px-2.5 py-1 text-[11px] font-bold text-ink-600">

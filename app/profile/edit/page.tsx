@@ -2,8 +2,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { updateProfile } from "@/app/actions/profile";
 
-export default async function EditProfilePage() {
+export default async function EditProfilePage({
+  searchParams,
+}: {
+  searchParams: { next?: string };
+}) {
   const supabase = createClient();
+  const next = searchParams.next || "";
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -11,6 +16,11 @@ export default async function EditProfilePage() {
   if (!user) redirect("/login?next=/profile/edit");
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+  const { data: profileContact } = await supabase
+  .from("profile_contacts")
+  .select("contact_method")
+  .eq("user_id", user.id)
+  .maybeSingle();
   const { data: skills } = await supabase
   .from("skills")
   .select("id, name")
@@ -28,6 +38,7 @@ export default async function EditProfilePage() {
       </p>
 
       <form action={updateProfile} className="mt-8 space-y-5">
+        <input type="hidden" name="next" value={next} />
         <Field label="الاسم الكامل">
           <input name="full_name" required defaultValue={profile?.full_name || ""} className="input" />
         </Field>
@@ -53,7 +64,7 @@ export default async function EditProfilePage() {
           label="وسيلة التواصل"
           hint="تظهر فقط للطرف الآخر بعد قبول طلب الانضمام (رقم واتساب، بريد، أو رابط)"
         >
-          <input name="contact_method" defaultValue={profile?.contact_method || ""} className="input" placeholder="مثال: 05xxxxxxxx أو بريدك الإلكتروني" />
+          <input name="contact_method" defaultValue={profileContact?.contact_method || ""} className="input" placeholder="مثال: 05xxxxxxxx أو بريدك الإلكتروني" />
         </Field>
 
         <Field label="رابط صورة شخصية (اختياري)">

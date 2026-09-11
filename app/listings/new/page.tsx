@@ -2,14 +2,46 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createListing } from "@/app/actions/listings";
 import { LISTING_TYPE_LABELS_AR, MODE_LABELS_AR } from "@/types/database";
+import Link from "next/link";
 
 export default async function NewListingPage() {
   const supabase = createClient();
+  const { data: skills } = await supabase
+  .from("skills")
+  .select("id, name")
+  .order("name");
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login?next=/listings/new");
+  const { data: profile } = await supabase
+  .from("profile_contacts")
+  .select("contact_method")
+  .eq("user_id", user.id)
+  .maybeSingle();
+if (!profile?.contact_method) {
+  return (
+    <div className="mx-auto max-w-2xl px-5 py-14">
+      <div className="rounded-2xl border border-spark/15 bg-spark/5 p-6">
+        <h1 className="font-display text-2xl font-bold text-ink">
+          أضف وسيلة تواصل أولًا
+        </h1>
+
+        <p className="mt-2 text-sm leading-relaxed text-ink-400">
+          نحتاج وسيلة تواصل حتى يتمكن أعضاء الفريق من التواصل معك بعد قبول طلباتهم.
+        </p>
+
+        <Link
+          href="/profile/edit?next=/listings/new"
+          className="btn-primary mt-5 inline-block"
+        >
+          إضافة وسيلة تواصل
+        </Link>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-14">
@@ -18,7 +50,7 @@ export default async function NewListingPage() {
       شارك مشروعك وحدد المهارات والأعضاء الذين تبحث عنهم.
       </p>
 
-      ```tsx
+      
 <form action={createListing} className="mt-8 space-y-5">
   
 ```
@@ -76,26 +108,73 @@ export default async function NewListingPage() {
           <input type="url" name="external_link" className="input" placeholder="https://" />
         </Field>
 
-        <Field label="المهارات المطلوبة للمشروع">
+        <fieldset>
+  <legend className="mb-1.5 text-sm font-bold text-ink-600">
+    المهارات المطلوبة للمشروع
+  </legend>
   <p className="mb-2 text-xs text-ink-400">
     أضف المهارات التي تحتاجها من أعضاء فريقك.
   </p>
 
-  <input
-    name="required_skills"
-           />
-        </Field>
+  <details className="rounded-xl border border-ink-100 bg-paper">
+  <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-ink-600">
+    اختر المهارات المطلوبة
+  </summary>
 
-        <Field label="المهارات التي ستقدمها للمشروع">
+  <div className="max-h-64 overflow-y-auto border-t border-ink-100 p-3">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {(skills || []).map((skill) => (
+        <label
+          key={skill.id}
+          className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-sm text-ink-600 hover:bg-ink-50"
+        >
+          <input
+            type="checkbox"
+            name="required_skills"
+            value={skill.name}
+            className="h-4 w-4 shrink-0"
+          />
+          <span>{skill.name}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+</details>
+        </fieldset>
+
+        <fieldset>
+  <legend className="mb-1.5 text-sm font-bold text-ink-600">
+    المهارات التي ستقدمها للمشروع
+  </legend>
   <p className="mb-2 text-xs text-ink-400">
     أضف المهارات التي ستساهم بها في تنفيذ المشروع.
   </p>
 
-  <input
-    name="owned_skills"
-    
-  />
-</Field>
+  <details className="rounded-xl border border-ink-100 bg-paper">
+  <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-ink-600">
+    اختر المهارات التي ستقدمها
+  </summary>
+
+  <div className="max-h-64 overflow-y-auto border-t border-ink-100 p-3">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {(skills || []).map((skill) => (
+        <label
+          key={skill.id}
+          className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-sm text-ink-600 hover:bg-ink-50"
+        >
+          <input
+            type="checkbox"
+            name="owned_skills"
+            value={skill.name}
+            className="h-4 w-4 shrink-0"
+          />
+          <span>{skill.name}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+</details>
+</fieldset>
 
         <button type="submit" className="btn-primary w-full">
           نشر الفرصة

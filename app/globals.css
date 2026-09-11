@@ -11,13 +11,13 @@ html {
 }
 
 body {
-  background-color: #F7F5F0;
-  color: #12141F;
+  background-color: #FCFCFF;
+  color: #0E1B3D;
 }
 
 /* Visible keyboard focus everywhere, instead of the browser default outline */
 :focus-visible {
-  outline: 2px solid #4B4FE0;
+  outline: 2px solid #4F7BFF;
   outline-offset: 2px;
   border-radius: 4px;
 }
