@@ -15,21 +15,36 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function checkSession() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+  async function checkSession() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-      if (!session) {
+    if (code) {
+      const { error: exchangeError } =
+        await supabase.auth.exchangeCodeForSession(code);
+
+      if (exchangeError) {
         setError("رابط إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.");
         return;
       }
 
-      setReady(true);
+      window.history.replaceState({}, "", "/reset-password");
     }
 
-    checkSession();
-  }, [supabase]);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      setError("رابط إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.");
+      return;
+    }
+
+    setReady(true);
+  }
+
+  checkSession();
+}, [supabase]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
