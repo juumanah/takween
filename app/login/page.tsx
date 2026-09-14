@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 export default function LoginPage() {
   return (
     <Suspense fallback={null}>
@@ -17,6 +18,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,11 +43,28 @@ function LoginForm() {
   },
    });
     if (signInError) {
-      console.log("LOGIN ERROR:", signInError);
-  setError(signInError.message);
+  console.log("LOGIN ERROR:", signInError);
+
+  const message = signInError.message.toLowerCase();
+
+  if (message.includes("invalid login credentials")) {
+    setError("البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+  } else if (
+    message.includes("captcha") ||
+    message.includes("timeout") ||
+    message.includes("duplicate")
+  ) {
+    setError("انتهت صلاحية التحقق الأمني. تم تحديثه، حاولي تسجيل الدخول مرة أخرى.");
+  } else {
+    setError("تعذر تسجيل الدخول. حاولي مرة أخرى.");
+  }
+
+  setCaptchaToken(null);
+  turnstileRef.current?.reset();
+
   setLoading(false);
   return;
-    }
+}
 
     router.push(searchParams.get("next") || "/dashboard");
     router.refresh();
@@ -91,6 +110,7 @@ function LoginForm() {
 
         <Turnstile
           
+          ref={turnstileRef}
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
           onSuccess={(token) => setCaptchaToken(token)}
           onExpire={() => setCaptchaToken(null)}
