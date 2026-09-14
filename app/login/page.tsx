@@ -108,7 +108,14 @@ function LoginForm() {
 
       <p className="mt-6 text-center text-sm text-ink-400">
         ليس لديك حساب؟{" "}
-        <Link href="/signup" className="font-bold text-spark hover:text-spark-600">
+        <Link
+  href={
+    searchParams.get("next")
+      ? `/signup?next=${encodeURIComponent(searchParams.get("next")!)}`
+      : "/signup"
+  }
+  className="font-bold text-spark hover:text-spark-600"
+>
           أنشئ حسابًا
         </Link>
       </p>

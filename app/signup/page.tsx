@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Turnstile } from "@marsidev/react-turnstile";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+const next = searchParams.get("next") || "/dashboard";
+
   const supabase = createClient();
 
   const [fullName, setFullName] = useState("");
@@ -37,9 +40,10 @@ export default function SignupPage() {
      email,
      password,
      options: {
-    data: { full_name: fullName },
-    captchaToken,
-  },
+  data: { full_name: fullName },
+  captchaToken,
+  emailRedirectTo: `${window.location.origin}/confirm-email?next=${encodeURIComponent(next)}`,
+},
 });
 
     if (signUpError) {
